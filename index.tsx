@@ -250,7 +250,14 @@ class UIManager {
             if (!files || files.length === 0) return;
 
             const file = files[0];
-            if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+            
+            // Check file extension and MIME type more flexibly
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            const isImage = file.type.startsWith('image/') || 
+                           ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].some(ext => 
+                               file.name.toLowerCase().endsWith(`.${ext}`));
+            
+            if (isPdf || isImage) {
                 console.log('File selected:', file.name);
                 
                 // Store file in localStorage for later use
@@ -477,8 +484,14 @@ const initYearsDropdown = () => {
 
 // Handle PDF upload
 const handlePdfUpload = (file: File) => {
-    if (!file.type.includes('pdf')) {
-        alert('الرجاء اختيار ملف PDF فقط');
+    // Check file extension and MIME type more flexibly
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const isImage = file.type.startsWith('image/') || 
+                   ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].some(ext => 
+                       file.name.toLowerCase().endsWith(`.${ext}`));
+    
+    if (!isPdf && !isImage) {
+        alert('الرجاء اختيار ملف PDF أو صورة فقط');
         return;
     }
 
@@ -490,9 +503,13 @@ const handlePdfUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
-            // Store the PDF in localStorage (for demo purposes)
-            localStorage.setItem('honorsPdf', e.target?.result as string);
-            console.log('PDF saved successfully:', file.name);
+            // Store the file in localStorage (for demo purposes)
+            localStorage.setItem('uploadedFile', JSON.stringify({
+                name: file.name,
+                type: isPdf ? 'application/pdf' : file.type,
+                data: e.target?.result
+            }));
+            console.log('File saved successfully:', file.name);
             alert('تم رفع الملف بنجاح');
         } catch (error) {
             console.error('Error saving PDF:', error);
@@ -1045,14 +1062,20 @@ const displayPdfInHonorBoard = function() {
     const pdfContainer = document.createElement('div');
     pdfContainer.className = 'pdf-container';
     
-    if (fileData.type === 'application/pdf') {
+    // Check if it's a PDF by type or extension
+    const isPdf = fileData.type === 'application/pdf' || fileData.name.toLowerCase().endsWith('.pdf');
+    const isImage = fileData.type.startsWith('image/') || 
+                   ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].some(ext => 
+                       fileData.name.toLowerCase().endsWith(`.${ext}`));
+    
+    if (isPdf) {
         const pdfEmbed = document.createElement('embed');
         pdfEmbed.src = fileData.data;
         pdfEmbed.type = 'application/pdf';
         pdfEmbed.width = '100%';
         pdfEmbed.height = '600px';
         pdfContainer.appendChild(pdfEmbed);
-    } else if (fileData.type.startsWith('image/')) {
+    } else if (isImage) {
         const img = document.createElement('img');
         img.src = fileData.data;
         img.alt = fileData.name;
