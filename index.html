@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة قواعد السلوك والمواظبة ( مبادرة انضباط )</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="month-groups.css">
+<link rel="stylesheet" href="delete-all-btn.css">
+</head>
+<body>
+
+    <header>
+        <div class="container header-container">
+            <div class="school-info">
+                <img id="school-logo-img" src="" alt="شعار المدرسة" class="school-logo-img"/>
+                <span id="school-name-span" class="logo school-name-span">ابتدائية الخنساء برغدان</span>
+            </div>
+            <h1><a href="./index.html" class="header-link">بوابة قواعد السلوك والمواظبة ( مبادرة انضباط )</a></h1>
+            <nav>
+                <a href="./rules.html">القواعد</a>
+                <a href="#honors-section">لوحات الشرف</a>
+                <a href="#footer">تواصل</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Removed rules section from homepage - now only available in rules page -->
+        
+        <!-- Rules Section Button -->
+        <section class="rules-section-button">
+            <a href="./rules.html" class="rules-btn">
+                <i class="fas fa-book"></i>
+                <span>قواعد السلوك والمواظبة</span>
+            </a>
+        </section>
+
+        <section id="honors-section" class="card large-card">
+            <div class="card-header">
+                <i class="fas fa-star"></i>
+                <h2>لوحات الشرف الشهرية</h2>
+            </div>
+            
+            <div id="honors-filters" class="filters-container">
+                <select id="month-filter" aria-label="تصفية حسب الشهر">
+                    <option value="">الكل</option>
+                </select>
+                <select id="year-filter" aria-label="تصفية حسب السنة"></select>
+                <select id="grade-filter" aria-label="تصفية حسب الصف">
+                    <option value="">كل الصفوف</option>
+                    <option value="الأول">الصف الأول</option>
+                    <option value="الثاني">الصف الثاني</option>
+                    <option value="الثالث">الصف الثالث</option>
+                    <option value="الرابع">الصف الرابع</option>
+                    <option value="الخامس">الصف الخامس</option>
+                    <option value="السادس">الصف السادس</option>
+                </select>
+            </div>
+
+            <div class="distinguished-students-container">
+                <div class="distinguished-section">
+                    <h3><i class="fas fa-award"></i> المتميزات سلوكياً</h3>
+                    <div id="distinguished-behavior-list" class="student-cards-grid">
+                    </div>
+                </div>
+                <div class="distinguished-section">
+                    <h3><i class="fas fa-user-clock"></i> المتميزات حضورياً</h3>
+                    <div id="distinguished-attendance-list" class="student-cards-grid">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="card">
+             <div class="card-header">
+                <i class="fas fa-info-circle"></i>
+                <h2>نبذة تعريفية</h2>
+            </div>
+            <p>يتم اختيار الطالبات المتميزات بناءً على معايير واضحة وشفافة تهدف إلى تشجيع السلوك الإيجابي والمواظبة على الحضور. يتم التقييم شهريًا من قبل إدارة المدرسة والهيئة التعليمية لضمان العدالة وتكريم المستحقات.</p>
+        </section>
+
+    </main>
+    
+    <!-- Add a button to open the admin modal -->
+    
+    <button id="admin-fab" class="fab" title="لوحة تحكم الموجهة الطلابية" aria-label="فتح لوحة تحكم الموجهة الطلابية">
+        <i class="fas fa-user-shield"></i>
+    </button>
+    
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h2>تسجيل دخول الموجهة الطلابية</h2>
+            <input type="password" id="password-input" placeholder="أدخل كلمة المرور" />
+            <button id="submit-password">دخول</button>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <button id="close-modal-btn" class="close-btn">&times;</button>
+            <div class="admin-controls">
+                <div class="month-settings">
+                    <button id="pin-month-btn" class="action-btn">
+                        <i class="fas fa-thumbtack"></i>
+                        تثبيت الشهر الحالي
+                    </button>
+                </div>
+                <div class="pdf-upload-section">
+                    <h4>رفع ملف PDF للطالبات المتميزات</h4>
+                    <div class="pdf-upload-container">
+                        <button id="upload-pdf-btn" class="action-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            اختيار ملف PDF
+                        </button>
+                        <input type="file" id="pdf-upload" accept=".pdf,application/pdf" style="display: none;" />
+                        <div id="pdf-preview" class="pdf-preview"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tabs">
+                <button id="rules-tab" class="tab active">القواعد</button>
+                <button id="honors-tab" class="tab">لوحات الشرف</button>
+                <button id="settings-tab" class="tab">الإعدادات</button>
+            </div>
+
+            <!-- Honors Management Tab -->
+            <div id="honors-tab" class="tab-content active">
+                <h3>إدارة الطالبات المتميزات</h3>
+                
+                <!-- PDF Upload Section -->
+                <div class="pdf-upload-section">
+                    <h4>رفع ملف PDF للطالبات المتميزات</h4>
+                    <div class="pdf-upload-container">
+                        <button id="upload-pdf-btn" class="action-btn">
+                            <i class="fas fa-file-pdf"></i> اختيار ملف PDF
+                        </button>
+                        <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;" />
+                        <div id="pdf-preview" class="pdf-preview"></div>
+                    </div>
+                </div>
+                
+                <!-- Bulk Add Section -->
+                <div class="bulk-add-section">
+                    <h4>إضافة دفعات من الطالبات</h4>
+                    <div class="bulk-add-container">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bulk-grade">الصف</label>
+                                <select id="bulk-grade">
+                                    <option value="">اختر الصف</option>
+                                    <option value="الأول">الصف الأول</option>
+                                    <option value="الثاني">الصف الثاني</option>
+                                    <option value="الثالث">الصف الثالث</option>
+                                    <option value="الرابع">الصف الرابع</option>
+                                    <option value="الخامس">الصف الخامس</option>
+                                    <option value="السادس">الصف السادس</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bulk-section">الشعبة</label>
+                                <select id="bulk-section">
+                                    <option value="">اختر الشعبة</option>
+                                    <option value="أ">أ</option>
+                                    <option value="ب">ب</option>
+                                    <option value="ج">ج</option>
+                                    <option value="د">د</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bulk-category">الفئة</label>
+                                <select id="bulk-category">
+                                    <option value="">اختر الفئة</option>
+                                    <option value="behavior">سلوكي</option>
+                                    <option value="attendance">حضوري</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulk-reason">سبب التميز</label>
+                            <input type="text" id="bulk-reason" placeholder="سبب التميز">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bulk-month">الشهر</label>
+                                <select id="bulk-month">
+                                    <option value="">اختر الشهر</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bulk-year">السنة</label>
+                                <select id="bulk-year">
+                                    <option value="">اختر السنة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulk-names">أسماء الطالبات (اسم في كل سطر)</label>
+                            <textarea id="bulk-names" rows="5" placeholder="أسماء الطالبات\nاسم1\nاسم2\nاسم3"></textarea>
+                        </div>
+                        <button type="button" id="add-bulk-btn" class="form-btn">
+                            <i class="fas fa-plus"></i> إضافة الطالبات
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Single Add Section -->
+                <div class="single-add-section">
+                    <h4>إضافة طالبة متميزة</h4>
+                    <form id="add-honor-form" class="admin-form">
+                        <input type="hidden" id="honor-id" name="honor-id">
+                        <input type="hidden" id="honor-image-hidden" name="honor-image-hidden">
+                        <input type="text" id="honor-name" name="honor-name" placeholder="اسم الطالبة" required>
+                        <select id="honor-grade" name="honor-grade" required><option value="">اختر الصف</option></select>
+                        <select id="honor-section" name="honor-section" required><option value="">اختر الشعبة</option></select>
+                        <select id="honor-category" name="honor-category" required>
+                            <option value="">اختر الفئة</option>
+                            <option value="behavior">سلوكي</option>
+                            <option value="attendance">حضوري</option>
+                        </select>
+                        <input type="text" id="honor-reason" name="honor-reason" placeholder="سبب التميز (مختصر)" required>
+                        <select id="honor-status" name="honor-status" required>
+                            <option value="published">منشور</option>
+                            <option value="draft">مسودة</option>
+                        </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="honor-month">الشهر</label>
+                                <select id="honor-month" name="honor-month" required>
+                                    <option value="">اختر الشهر</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="honor-year">السنة</label>
+                                <select id="honor-year" name="honor-year" required>
+                                    <option value="">اختر السنة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="file-input-wrapper">
+                            <label for="honor-image">صورة الطالبة (اختياري)</label>
+                            <input type="file" id="honor-image" name="honor-attachment" accept="image/*">
+                        </div>
+                        <button type="submit" class="form-btn">حفظ الطالبة</button>
+                        <button type="button" class="form-btn secondary-btn" id="upload-csv-btn">رفع ملف CSV</button>
+                    </form>
+                </div>
+                
+                <div class="admin-list-container" id="admin-honors-list"></div>
+                <div class="admin-actions">
+                    <button id="delete-all-honors-btn" class="delete-all-btn">
+                        <i class="fas fa-trash-alt"></i> حذف جميع الطالبات
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rules Management Tab -->
+            <div id="rules-tab" class="tab-content">
+                <h3>إدارة القواعد</h3>
+                
+                <!-- Rules List with Preview -->
+                <div class="rules-preview-section">
+                    <h4>معاينة القواعد</h4>
+                    <div id="rules-preview-container" class="rules-preview-container">
+                        <!-- Rules will be displayed here with full file preview -->
+                    </div>
+                </div>
+                
+                <!-- Add/Edit Rule Form -->
+                <div class="rule-form-section">
+                    <h4 id="rule-form-title">إضافة قاعدة جديدة</h4>
+                     <form id="add-rule-form" class="admin-form">
+                        <input type="hidden" id="rule-id" name="rule-id">
+                        <input type="text" id="rule-title" name="rule-title" placeholder="عنوان القاعدة" required>
+                        <textarea id="rule-text" name="rule-text" placeholder="نص القاعدة" required rows="3"></textarea>
+                        <select id="rule-type" name="rule-type" required>
+                            <option value="">اختر النوع</option>
+                            <option value="behavior">سلوك</option>
+                            <option value="attendance">مواظبة</option>
+                        </select>
+                        <input type="number" id="rule-order" name="rule-order" placeholder="ترتيب الظهور" value="99">
+                         <select id="rule-status" name="rule-status" required>
+                            <option value="published">منشور</option>
+                            <option value="draft">مسودة</option>
+                        </select>
+                        <div class="file-input-wrapper">
+                            <label for="rule-attachment">مرفق (صورة أو PDF)</label>
+                            <input type="file" id="rule-attachment" name="rule-attachment" accept="image/*,application/pdf">
+                            <div id="file-preview" class="file-preview"></div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="form-btn">حفظ القاعدة</button>
+                            <button type="button" id="cancel-rule-edit" class="form-btn secondary-btn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="admin-list-container" id="admin-rules-list"></div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <h3>إعدادات الموقع</h3>
+                <form id="settings-form" class="admin-form settings-form">
+                    <div class="file-input-wrapper">
+                        <label for="setting-logo">شعار المدرسة</label>
+                        <input type="file" id="setting-logo" name="setting-logo" accept="image/*">
+                    </div>
+                    <div class="color-picker-wrapper">
+                        <label for="setting-primary-color">اللون الأساسي</label>
+                        <input type="color" id="setting-primary-color" name="setting-primary-color" value="#4a90e2">
+                    </div>
+                    <div class="color-picker-wrapper">
+                        <label for="setting-secondary-color">اللون الثانوي</label>
+                        <input type="color" id="setting-secondary-color" name="setting-secondary-color" value="#f5a623">
+                    </div>
+                    <textarea id="setting-footer-text" name="setting-footer-text" placeholder="نص التذييل" required rows="3"></textarea>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="setting-honors-tab" name="setting-honors-tab" checked>
+                        <label for="setting-honors-tab">تفعيل تبويب لوحات الشرف</label>
+                    </div>
+                    <button type="submit" class="form-btn">حفظ الإعدادات</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div class="container">
+            <p id="footer-text">© 2024 ابتدائية الخنساء برغدان. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="index.tsx"></script>
+</body>
+</html>

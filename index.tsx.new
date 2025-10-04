@@ -1,0 +1,378 @@
+// Cache DOM elements to avoid repeated queries
+let elements = {
+    adminFab: null,
+    adminModal: null,
+    monthFilter: null,
+    yearFilter: null,
+    schoolLogoImg: null,
+    footerText: null,
+    tabLinks: [],
+    tabContents: []
+};
+
+// Function to cache DOM elements
+const cacheElements = function() {
+    elements = {
+        adminFab: document.getElementById('admin-fab'),
+        adminModal: document.getElementById('admin-modal'),
+        monthFilter: document.getElementById('month-filter'),
+        yearFilter: document.getElementById('year-filter'),
+        schoolLogoImg: document.querySelector('.school-logo-img'),
+        footerText: document.querySelector('#footer p'),
+        tabLinks: document.querySelectorAll('.tab-link'),
+        tabContents: document.querySelectorAll('.tab-content')
+    };
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Cache DOM elements
+    cacheElements();
+
+    // Add debounce function to improve performance
+    const debounce = function(func, wait) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    };
+
+    // Add performance monitoring
+    const performanceMonitor = {
+        start: 0,
+        end: 0,
+
+        startTimer: function(label) {
+            this.start = performance.now();
+            console.log(`Performance timer started for: ${label}`);
+        },
+
+        endTimer: function(label) {
+            this.end = performance.now();
+            const duration = this.end - this.start;
+            console.log(`Performance timer for ${label}: ${duration.toFixed(2)}ms`);
+
+            // Log if operation took longer than expected
+            if (duration > 100) {
+                console.warn(`Performance warning: ${label} took ${duration.toFixed(2)}ms`);
+            }
+        }
+    };
+
+    // Convert Gregorian to Hijri date with caching
+    const gregorianToHijri = function(date) {
+        // Using a more accurate algorithm for Hijri conversion
+        const gYear = date.getFullYear();
+        const gMonth = date.getMonth() + 1;
+        const gDay = date.getDate();
+
+        // Calculate the Julian day number
+        let a = Math.floor((14 - (gMonth)) / 12);
+        let y = gYear + 4800 - a;
+        let m = gMonth + 12 * a - 3;
+
+        // Julian day number for Gregorian date
+        let jd = gDay + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+
+        // Convert Julian day to Hijri
+        let l = jd - 1948440 + 10631; // Adjust to start of Hijri calendar
+        let n = Math.floor(l / 10631);
+        l = l - 10631 * n;
+
+        let j = Math.floor((l - 1) / 355);
+        let d = (l - 1 - 355 * j);
+        let g = Math.floor((d) / 30);
+
+        let hijriDay = d - 30 * g + 1;
+        let hijriMonth = g - (g >= 6 ? 1 : 0) + 12 * n;
+        let hijriYear = 30 * n + j - 30;
+
+        return { year: hijriYear, month: hijriMonth, day: hijriDay };
+    };
+
+    // Get Hijri month names
+    const hijriMonths = [
+        'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأول', 'جمادى الثاني',
+        'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+    ];
+
+    // Initialize date filters
+    const initializeDateFilters = function() {
+        // Cache DOM elements again to ensure we have the latest elements
+        cacheElements();
+
+        const monthFilter = elements.monthFilter;
+        const yearFilter = elements.yearFilter;
+
+        if (!monthFilter || !yearFilter) {
+            console.error('Date filter elements not found');
+            console.log('Month filter:', monthFilter);
+            console.log('Year filter:', yearFilter);
+            return;
+        }
+
+        // Start performance monitoring
+        performanceMonitor.startTimer('Date filters initialization');
+
+        // Get current date and convert to Hijri
+        const currentDate = new Date();
+        const hijriDate = gregorianToHijri(currentDate);
+
+        // Populate years (current Hijri year and previous 4 years)
+        const yearOptions = [];
+        for (let year = hijriDate.year; year >= hijriDate.year - 4; year--) {
+            yearOptions.push(`<option value="${year}">${year}</option>`);
+        }
+        yearFilter.innerHTML = yearOptions.join('');
+
+        // Set current Hijri year as default
+        yearFilter.value = hijriDate.year.toString();
+
+        // Populate Hijri months
+        const monthOptions = hijriMonths.map(function(month, index) {
+            return `<option value="${index + 1}">${month}</option>`;
+        }).join('');
+        monthFilter.innerHTML = monthOptions;
+
+        // Set current Hijri month as default
+        monthFilter.value = hijriDate.month.toString();
+
+        // End performance monitoring
+        performanceMonitor.endTimer('Date filters initialization');
+
+        console.log('Date filters initialized with Hijri calendar');
+    };
+
+    // Handle admin modal
+    const initializeAdminModal = function() {
+        // Cache DOM elements again to ensure we have the latest elements
+        cacheElements();
+
+        const adminFab = elements.adminFab;
+        const adminModal = elements.adminModal;
+        const closeBtn = adminModal?.querySelector('.close-btn');
+        const modalContent = adminModal?.querySelector('.modal-content');
+
+        if (!adminFab || !adminModal) {
+            console.error('Admin modal elements not found');
+            console.log('Admin Fab:', adminFab);
+            console.log('Admin Modal:', adminModal);
+            return;
+        }
+
+        console.log('Admin modal elements found, initializing...');
+
+        // Open modal with debouncing to prevent multiple clicks
+        const openModal = function() {
+            console.log('Opening admin modal');
+            adminModal.style.display = 'flex';
+            adminModal.style.alignItems = 'center';
+            adminModal.style.justifyContent = 'center';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+
+            // Ensure modal content is visible
+            if (modalContent) {
+                modalContent.style.display = 'block';
+            }
+        };
+
+        // Add debounced event listener
+        adminFab.addEventListener('click', debounce(openModal, 200));
+
+        // Close modal with debouncing to prevent multiple clicks
+        const closeModal = function() {
+            console.log('Closing admin modal');
+            adminModal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+
+            // Reset active tab to first tab
+            const tabLinks = adminModal.querySelectorAll('.tab-link');
+            const tabContents = adminModal.querySelectorAll('.tab-content');
+
+            if (tabLinks.length > 0) {
+                tabLinks[0].classList.add('active');
+                tabLinks.forEach((link, index) => {
+                    if (index > 0) link.classList.remove('active');
+                });
+            }
+
+            if (tabContents.length > 0) {
+                tabContents[0].classList.add('active');
+                tabContents.forEach((content, index) => {
+                    if (index > 0) content.classList.remove('active');
+                });
+            }
+        };
+
+        // Add debounced event listener for close button
+        if (closeBtn) {
+            closeBtn.addEventListener('click', debounce(closeModal, 200));
+        }
+
+        // Close modal when clicking outside the modal content
+        adminModal.addEventListener('click', function(e) {
+            if (e.target === adminModal && !modalContent?.contains(e.target)) {
+                closeModal();
+            }
+        });
+
+        // Handle tab navigation in modal with debouncing
+        const tabLinks = adminModal.querySelectorAll('.tab-link');
+        const handleTabClick = function(e) {
+            e.preventDefault();
+            const targetTab = e.currentTarget.getAttribute('data-tab');
+            if (targetTab) {
+                // Hide all tab contents
+                adminModal.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Remove active class from all tab links
+                tabLinks.forEach(l => l.classList.remove('active'));
+
+                // Show selected tab content
+                const targetContent = document.getElementById(targetTab);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    // Scroll to top of modal content
+                    targetContent.scrollTop = 0;
+                }
+
+                // Add active class to clicked tab link
+                e.currentTarget.classList.add('active');
+            }
+        };
+
+        // Add debounced event listeners to tab links
+        tabLinks.forEach(link => {
+            link.addEventListener('click', debounce(handleTabClick, 200));
+        });
+    };
+
+    // Initialize settings with debouncing
+    const initializeSettings = debounce(function() {
+        const defaultSettings = {
+            logo: './assets/default-logo.png',
+            primaryColor: '#4a90e2',
+            secondaryColor: '#f5a623',
+            footerText: 'للتواصل: example@school.edu | © 2024 ابتدائية الخنساء برغدان. جميع الحقوق محفوظة.',
+        };
+
+        try {
+            // Cache DOM elements again to ensure we have the latest elements
+            cacheElements();
+
+            let settings = { ...defaultSettings, ...JSON.parse(localStorage.getItem('schoolSettings') || '{}') };
+
+            // Update footer text
+            if (elements.footerText) {
+                elements.footerText.textContent = settings.footerText;
+            }
+
+            // Update colors
+            document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', settings.secondaryColor);
+
+            // Update logo
+            const logoElements = document.querySelectorAll('.school-logo-img');
+            logoElements.forEach(el => {
+                if (el) {
+                    el.src = settings.logo;
+                    // Add error handling for image loading
+                    el.onerror = function() {
+                        el.src = defaultSettings.logo;
+                    };
+                }
+            });
+
+            // Update school name
+            const nameElements = document.querySelectorAll('.school-name-span');
+            nameElements.forEach(el => {
+                if (el) el.textContent = 'ابتدائية الخنساء برغدان';
+            });
+
+            console.log('Settings applied successfully');
+        } catch (error) {
+            console.error('Error initializing settings:', error);
+            // Use default settings if there's an error
+            document.documentElement.style.setProperty('--primary-color', defaultSettings.primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', defaultSettings.secondaryColor);
+        }
+    }, 100);
+
+    // Check if all required components are available
+    const checkRequiredComponents = function() {
+        const requiredElements = [
+            { id: 'admin-fab', name: 'Admin FAB button' },
+            { id: 'admin-modal', name: 'Admin modal' },
+            { id: 'month-filter', name: 'Month filter' },
+            { id: 'year-filter', name: 'Year filter' },
+            { id: 'school-logo-img', name: 'School logo' }
+        ];
+
+        let allAvailable = true;
+
+        requiredElements.forEach(element => {
+            const el = document.getElementById(element.id);
+            if (!el) {
+                console.error(`Required component '${element.name}' with id '${element.id}' not found`);
+                allAvailable = false;
+            } else {
+                console.log(`Component '${element.name}' found`);
+            }
+        });
+
+        return allAvailable;
+    };
+
+    // Initialize all components
+    console.log('Initializing components...');
+
+    if (!checkRequiredComponents()) {
+        console.error('Not all required components are available. Some features may not work correctly.');
+    }
+
+    // Initialize date filters
+    initializeDateFilters();
+    console.log('Date filters initialized');
+
+    // Initialize admin modal
+    initializeAdminModal();
+    console.log('Admin modal initialized');
+
+    // Initialize settings
+    initializeSettings();
+    console.log('Settings initialized');
+
+    console.log('All components initialized successfully');
+
+    // Add error handling for uncaught errors
+    window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+    });
+
+    // Add warning for missing elements
+    const checkElements = function() {
+        const elementIds = [
+            'admin-fab',
+            'admin-modal',
+            'month-filter',
+            'year-filter',
+            'school-logo-img'
+        ];
+
+        elementIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with id '${id}' not found`);
+            }
+        });
+
+        // Log cached elements
+        console.log('Cached elements:', elements);
+    };
+
+    // Check elements after a short delay to ensure DOM is fully loaded
+    setTimeout(checkElements, 100);
+});

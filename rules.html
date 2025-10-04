@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>القواعد - بوابة قواعد السلوك والمواظبة ( مبادرة انضباط )</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css"> <!-- Re-use some styles -->
+    <link rel="stylesheet" href="rules.css"> <!-- Add specific styles -->
+</head>
+<body>
+
+    <header>
+        <div class="container header-container">
+            <div class="school-info">
+                 <img src="" alt="شعار المدرسة" class="school-logo-img"/>
+                 <span class="logo school-name-span">ابتدائية الخنساء برغدان</span>
+            </div>
+            <h1><a href="./index.html" class="header-link">بوابة قواعد السلوك والمواظبة ( مبادرة انضباط )</a></h1>
+            <nav>
+                <a href="./rules.html" class="active">القواعد</a>
+                <a href="./index.html#honors-section">لوحات الشرف</a>
+                <a href="./index.html#footer">تواصل</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="back-to-home-container">
+            <a href="./index.html" class="back-to-home-btn"><i class="fas fa-arrow-left"></i> العودة للرئيسية</a>
+        </div>
+        <section id="rules-content" class="card large-card">
+            <h1>قواعد السلوك والمواظبة</h1>
+            
+            <article class="rules-category">
+                <h2>أولاً: قواعد السلوك</h2>
+                <div id="all-behavior-rules" class="rules-list-container">
+                    <!-- Behavior rules will be loaded here -->
+                </div>
+            </article>
+
+            <article class="rules-category">
+                <h2>ثانياً: قواعد المواظبة</h2>
+                 <div id="all-attendance-rules" class="rules-list-container">
+                    <!-- Attendance rules will be loaded here -->
+                </div>
+            </article>
+            
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="container">
+            <p></p>
+        </div>
+    </footer>
+
+    <script src="rules.js" type="module"></script>
+</body>
+</html>
